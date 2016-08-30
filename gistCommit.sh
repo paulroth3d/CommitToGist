@@ -97,7 +97,7 @@ while read -r line; do
 	elif [[ -z "${gistURL}" ]]; then
 		#echo "gistUrl not set"
 		#git show "${startCommit}:${line}"
-		gistURL=`git show "${startCommit}:${line}" | gist -p -d "${gistDesc}" -f "${line}"`
+		gistURL=`git show "${startCommit}:${line}" | gist -p -c -d "${gistDesc}" -f "${line}"`
 		echo "[${line}] uploaded to gist: ${gistURL}"
 	else
 		#echo "gistURL[${gistURL}]"
@@ -119,4 +119,4 @@ while read -r line; do
 	fi
 done <<< "${linesChanged}"
 
-echo "created gist:${gistURL}"
+echo "created gist: ${gistURL}/revisions"
