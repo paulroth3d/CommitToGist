@@ -37,4 +37,13 @@ or
 	ex:
 	. gistCommit.sh 49c52dbbc9b1adfa527ced3b69b5b28575fe32af~10 49c52dbbc9b1adfa527ced3b69b5b28575fe32af
 
+# To Check Before Creating the Gist
+(sometimes its best to check what files will be created in the gist beforehand)
 
+	#this will simply list the files that would have been included in the gist.
+	. gistCommit.sh --test
+
+# To list the commits available
+
+	#this will list the most recent commits
+	. gistCommit.sh --log
