@@ -71,7 +71,7 @@ fi
 
 # determine which files have changed
 if ! [[ -z "${arg1}" ]]; then
-	linesChanged=`git diff "${startCommit}..${endCommit}" --name-only`
+	linesChanged=`git diff "${startCommit}...${endCommit}" --name-only`
 fi
 
 # if we should only list the changes first
@@ -85,7 +85,7 @@ fi
 echo "starting to upload commits[${startCommit}:${endCommit}]"
 
 # create a description using the commit range
-gistDesc="${startCommit}..${endCommit}"
+gistDesc="${startCommit}...${endCommit}"
 
 unset gistURL;
 
