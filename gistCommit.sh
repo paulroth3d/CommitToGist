@@ -1,27 +1,96 @@
 #!/bin/bash
 
-echo "what is the ending commit"
-endCommitDef="49c52dbbc9b1adfa527ced3b69b5b28575fe32af";
-read endCommitIn;
-endCommit="${endCommitIn:-${endCommitDef}}";
+arg1="${1}"
+arg2="${2}"
+arg3="${3}"
+arg4="${4}"
 
-echo "what is the starting commit (blank means just that commit)"
-startCommitDef="${endCommit}~1";
-read startCommitIn;
-startCommit="${startCommitIn:-${startCommitDef}}";
+if [[ -z "${arg1}" ]]; then
+	echo "Please provite a git commit to create the gist from."
+	echo ""
+	echo "gistCommit can be run in two ways:"
+	echo ". gistCommit [Commit SHA]"
+	echo "or"
+	echo ". gistCommit [From Commit SHA] [To Commit SHA]"
+	echo ""
+	echo "- To just see what changes would be sent, run -"
+	echo ". gistCommit --test"
+	echo ""
+	echo "(protip, use ~1 to return the commit before"
+	echo "such as 287e240f6e8362f2ba16e7ba4d359660e3cf15e4~1)"
+	echo ""
+	
+	return;
+fi
+
+# use replacements to allow for unsetting flags.
+unset isTest;
+if [[ "${arg1}" == "--test" ]]; then
+	echo "arg1"
+	isTest="true"
+	unset arg1;
+elif [[ "${arg2}" == "--test" ]]; then
+	echo "arg2"
+	isTest="true"
+	unset arg2;
+elif [[ "${arg3}" == "--test" ]]; then
+	echo "arg3"
+	isTest="true"
+	unset arg3;
+elif [[ "${arg4}" == "--test" ]]; then
+	echo "arg4"
+	isTest="true"
+	unset arg4;
+fi
+
+# allow for listing the commits made
+unset listLog;
+if [[ "${arg1}" == "--log" || "${arg1}" == "--list" ]]; then
+	listLog="true"
+	unset arg1;
+elif [[ "${arg2}" == "--log" || "${arg1}" == "--list" ]]; then
+	listLog="true"
+	unset arg2;
+elif [[ "${arg3}" == "--log" || "${arg1}" == "--list" ]]; then
+	listLog="true"
+	unset arg3;
+elif [[ "${arg4}" == "--log" || "${arg1}" == "--list" ]]; then
+	listLog="true"
+	unset arg4;
+fi
+
+if [[ "${listLog}" == "true" ]]; then
+	git log --oneline;
+	return;
+fi
+
+# determine if the second parameter was sent
+if [[ -z "${arg2}" ]]; then
+	startCommit="${arg1}~1"
+	endCommit="${arg1}"
+else
+	startCommit="${arg1}"
+	endCommit="${arg2}"
+fi
 
 # determine which files have changed
-linesChanged=`git diff "${startCommit}..${endCommit}" --name-only`
+if ! [[ -z "${arg1}" ]]; then
+	linesChanged=`git diff "${startCommit}..${endCommit}" --name-only`
+fi
 
-echo "starting to upload commits[${startCommit}:${endCommit}]"
+echo "isTest:${isTest}"
 
 # if we should only list the changes first
 # then echo out those changes and stop the program.
-if [[ "${1}" == "-test" || "${1}" == "--test" ]]; then
+if [[ "${isTest}" == "true" ]]; then
 	echo "the following are the files that would be uploaded to the gist"
 	echo "${linesChanged}"
 	return;
 fi
+
+echo "starting to upload commits[${startCommit}:${endCommit}]"
+echo "not a test"
+return;
 
 # create a description using the commit range
 gistDesc="${startCommit}..${endCommit}"
